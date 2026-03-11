@@ -35,7 +35,7 @@ ANTES de escrever QUALQUER código ou resposta:
 - **📖 SKILLS FIRST**: Se não anunciou `📖 Using skill:` → VOLTE e releia este bloco.
 - **⚠️ SEM SKILL**: Se nenhuma skill for relevante, diga: `⚠️ No skill used — responding from base knowledge.`
 - **🛑 NUNCA** pule o Socratic Gate em requests de build/feature/create.
-- **📣 PRE-FLIGHT OBRIGATÓRIO**: Após rotear agente+skill (passos 1-7), confirme: `⚙️ Agent: [nome] | Skill: [nome ou none] | 🇧🇷 PT-BR` — se Agent=orchestrator, revalide: é MESMO multi-domínio?
+- **📣 PRE-FLIGHT (interno)**: Após rotear agente+skill (passos 1-7), verifique internamente: Agent≠orchestrator (a menos que seja multi-domínio)? Skills corretas? PT-BR ativo? — NÃO imprima esta verificação, apenas valide internamente.
 - **🆘 /recall TRIGGER**: Se o usuário digitar `/recall` → PARE tudo, releia este arquivo imediatamente, e responda: `✅ Re-ancorado. Agent=[X] | Skill=[X] | PT-BR=SIM` antes de continuar.
 
 ---

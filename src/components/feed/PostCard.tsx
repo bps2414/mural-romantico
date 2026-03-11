@@ -125,10 +125,10 @@ export function PostCard({ post, currentUserRole }: { post: PostProps, currentUs
           <button
             onClick={handleDelete}
             disabled={deleting}
-            className="p-2 rounded-full text-rose-300 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+            className="p-3 -mr-2 rounded-full text-rose-300 hover:text-red-500 hover:bg-red-50 active:scale-95 transition-all duration-200 disabled:opacity-50"
             title="Excluir post"
           >
-            <Trash2 className="w-4.5 h-4.5" strokeWidth={1.5} />
+            <Trash2 className="w-5 h-5" strokeWidth={1.5} />
           </button>
         )}
       </div>
@@ -143,23 +143,23 @@ export function PostCard({ post, currentUserRole }: { post: PostProps, currentUs
       </div>
 
       {/* Actions (Like & Comment) */}
-      <div className="px-5 py-3 flex items-center gap-4">
+      <div className="px-3 py-2 flex items-center gap-2">
         <button 
           onClick={handleLike}
-          className="flex items-center gap-1.5 text-rose-950 group transition-all active:scale-90"
+          className="flex items-center justify-center gap-1.5 text-rose-950 group transition-transform active:scale-90 duration-200 p-2 min-h-[44px]"
         >
           <Heart 
             className={`w-7 h-7 transition-colors ${hasLiked ? 'fill-rose-500 text-rose-500' : 'group-active:fill-rose-500 group-active:text-rose-500'}`} 
             strokeWidth={1.5} 
           />
-          <span className="font-medium text-sm">{likesCount}</span>
+          <span className="font-medium text-[15px]">{likesCount}</span>
         </button>
         <button 
           onClick={handleToggleComments}
-          className="flex items-center gap-1.5 text-rose-950 group transition-all active:scale-90"
+          className="flex items-center justify-center gap-1.5 text-rose-950 group transition-transform active:scale-90 duration-200 p-2 min-h-[44px]"
         >
           <MessageCircle className="w-7 h-7" strokeWidth={1.5} />
-          <span className="font-medium text-sm">{commentsCount}</span>
+          <span className="font-medium text-[15px]">{commentsCount}</span>
         </button>
       </div>
 

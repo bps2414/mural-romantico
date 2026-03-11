@@ -24,3 +24,86 @@ body {
   background-color: var(--background);
   color: var(--foreground);
 }
+
+/* === Daily Message Animations === */
+
+/* Glow pulse on unread envelope */
+.daily-glow {
+  box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4);
+  animation: daily-pulse 2s ease-in-out infinite;
+}
+
+@keyframes daily-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.3); }
+  50% { box-shadow: 0 0 16px 4px rgba(244, 63, 94, 0.15); }
+}
+
+/* Fade-in for revealed message */
+.daily-fade-in {
+  animation: daily-reveal 0.6s ease-out both;
+}
+
+.daily-fade-in.delay-200 {
+  animation-delay: 0.2s;
+}
+
+@keyframes daily-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Breathing effect for empty state */
+.daily-empty {
+  animation: daily-breathe 3s ease-in-out infinite;
+}
+
+@keyframes daily-breathe {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.75; }
+}
+
+/* === Love Jar Animations === */
+
+/* Glassmorphism jar */
+.jar-glass {
+  backdrop-filter: blur(12px);
+}
+
+.jar-body {
+  filter: drop-shadow(0 4px 12px rgba(244, 63, 94, 0.1));
+}
+
+/* Floating hearts inside jar */
+.jar-hearts {
+  animation: jar-float 3s ease-in-out infinite;
+}
+
+.jar-hearts.delay-1 { animation-delay: 1s; }
+.jar-hearts.delay-2 { animation-delay: 2s; }
+
+@keyframes jar-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* Unfold reveal of drawn phrase */
+.jar-unfold {
+  animation: jar-reveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes jar-reveal {
+  from {
+    opacity: 0;
+    transform: scale(0.8) rotate(3deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}

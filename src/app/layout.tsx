@@ -1,5 +1,6 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Outfit, Quicksand, Caveat } from 'next/font/google';
+import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister';
 import './globals.css';
 
 const outfit = Outfit({
@@ -17,13 +18,29 @@ const caveat = Caveat({
   subsets: ['latin'],
 });
 
+export const viewport: Viewport = {
+  themeColor: '#e11d48',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export const metadata: Metadata = {
-  title: 'Mural Romântico',
-  description: 'Um lugar especial apenas para nós dois.',
+  title: 'Nosso Mural 💕',
+  description: 'O mural de amor do Bryan e da Tata',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Nosso Mural',
+  },
+  icons: {
+    icon: '/icons/icon-192.png',
+    apple: '/icons/icon-192.png',
+  },
   other: {
-    'apple-mobile-web-app-capable': 'yes',
-    'apple-mobile-web-app-status-bar-style': 'default',
-    'theme-color': '#fff1f2',
+    'mobile-web-app-capable': 'yes',
   },
 };
 
@@ -34,7 +51,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${outfit.variable} ${quicksand.variable} ${caveat.variable} antialiased font-sans bg-rose-50 text-slate-800`}>
+      <body className={`${outfit.variable} ${quicksand.variable} ${caveat.variable} antialiased font-sans bg-rose-50 text-slate-800 fixed inset-0 overflow-y-auto overscroll-none scroll-smooth`}>
+        <ServiceWorkerRegister />
         {children}
       </body>
     </html>
