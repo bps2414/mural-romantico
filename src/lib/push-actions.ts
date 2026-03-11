@@ -4,12 +4,25 @@ import { createClient } from "@/lib/supabase/server";
 // @ts-expect-error - no types available
 import webpush from "web-push";
 
-// Configure VAPID
-webpush.setVapidDetails(
-  "mailto:bryan@mural-romantico.app",
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-);
+// Configure VAPID lazy to prevent Next.js build errors when env vars are absent
+let isVapidConfigured = false;
+
+function initWebPush() {
+  if (isVapidConfigured) return true;
+  
+  if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
+    console.warn("VAPID keys not configured. Push notifications will be disabled.");
+    return false;
+  }
+
+  webpush.setVapidDetails(
+    "mailto:bryan@mural-romantico.app",
+    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+  );
+  isVapidConfigured = true;
+  return true;
+}
 
 // Save a push subscription to Supabase
 export async function saveSubscription(subscription: PushSubscription) {
@@ -51,6 +64,11 @@ export async function sendPushNotification(
   body: string,
   url: string = "/"
 ) {
+  if (!initWebPush()) {
+    console.warn("Skipping push notification send: VAPID keys missing.");
+    return { sent: 0, error: "VAPID keys missing" };
+  }
+
   const supabase = await createClient();
 
   const { data: subscriptions, error } = await supabase
