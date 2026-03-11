@@ -34,6 +34,11 @@ export function TabNavigation({
 
   return (
     <>
+      {/* Tab Content */}
+      <div className="max-w-md mx-auto p-4 pt-2">
+        {contentMap[activeTab]}
+      </div>
+
       {/* Espaçador para o conteúdo não ficar sob a tab bar fixada */}
       <div className="h-20" />
 
