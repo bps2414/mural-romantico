@@ -30,7 +30,7 @@ export default async function FeedPage() {
 
   const feedContent = (
     <>
-      <InstallPWA />
+      {/* <InstallPWA /> */}
       
       {posts && posts.length > 0 ? (
         <div className="space-y-6">
