@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-quicksand);
+  --font-heading: var(--font-outfit);
+  --font-handwriting: var(--font-handwriting);
+}
+
+:root {
+  --background: #fff1f2; /* rose-50 */
+  --foreground: #1e293b; /* slate-800 */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1e1b4b; /* indigo-950 or darker romantic tone */
+    --foreground: #fecdd3; /* rose-200 */
+  }
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
