@@ -4,6 +4,7 @@ import { useState } from "react";
 import { uploadImage, createPost, createNote } from "@/lib/admin-actions";
 import { Heart, Upload, Image as ImageIcon, StickyNote, Camera } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { LogoutButton } from "@/components/LogoutButton";
 import imageCompression from "browser-image-compression";
 
 type AdminMode = "photo" | "note";
@@ -81,8 +82,18 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="min-h-screen bg-rose-50 flex items-center justify-center p-4">
-      <div className="bg-white max-w-md w-full rounded-3xl p-8 shadow-sm border border-rose-100 flex flex-col items-center animate-in fade-in slide-in-from-bottom-4">
+    <div className="min-h-screen bg-rose-50 flex flex-col p-4 w-full">
+      {/* Header with back and logout */}
+      <header className="w-full max-w-md mx-auto flex items-center justify-between py-4 mb-8">
+        <div className="relative w-10">
+          <LogoutButton />
+        </div>
+        <button onClick={() => router.push("/")} className="text-sm font-medium text-rose-500 hover:text-rose-600">
+          Voltar pro Mural
+        </button>
+      </header>
+
+      <div className="bg-white max-w-md w-full mx-auto rounded-3xl p-8 shadow-sm border border-rose-100 flex flex-col items-center animate-in fade-in slide-in-from-bottom-4">
         
         <div className="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center text-rose-500 mb-4">
           <Heart className="w-8 h-8" />

@@ -20,3 +20,8 @@ export async function getAuthCookie(): Promise<Role> {
   if (role === "tata" || role === "admin") return role;
   return null;
 }
+
+export async function logout() {
+  const cookieStore = await cookies();
+  cookieStore.delete("mural_auth_role");
+}
