@@ -93,3 +93,23 @@ export async function getPhraseCount() {
   if (error) return 0;
   return count ?? 0;
 }
+
+/**
+ * Delete a phrase from the jar (admin only)
+ */
+export async function deletePhrase(id: string) {
+  const role = await getAuthCookie();
+  if (role !== "admin") return false;
+
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("love_jar_phrases").delete().eq("id", id);
+
+  if (error) {
+    console.error("Error deleting phrase:", error);
+    return false;
+  }
+
+  revalidatePath("/");
+  return true;
+}

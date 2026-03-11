@@ -1,6 +1,8 @@
 "use client";
 
 import { Music, Trash2 } from "lucide-react";
+import { deleteTrack } from "@/lib/playlist-actions";
+import { useState, useTransition } from "react";
 
 interface Track {
   id: string;
@@ -12,10 +14,18 @@ interface Track {
 interface PlaylistTabProps {
   tracks: Track[];
   isAdmin: boolean;
-  onDelete?: (id: string) => void;
 }
 
-export function PlaylistTab({ tracks, isAdmin, onDelete }: PlaylistTabProps) {
+export function PlaylistTab({ tracks, isAdmin }: PlaylistTabProps) {
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm("Certeza que quer apagar essa música da trilha?")) {
+      setIsDeleting(id);
+      await deleteTrack(id);
+      setIsDeleting(null);
+    }
+  };
   // Empty state
   if (tracks.length === 0) {
     return (
@@ -52,13 +62,18 @@ export function PlaylistTab({ tracks, isAdmin, onDelete }: PlaylistTabProps) {
                 </p>
               </div>
             </div>
-            {isAdmin && onDelete && (
+            {isAdmin && (
               <button
-                onClick={() => onDelete(track.id)}
-                className="p-1.5 text-rose-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                onClick={() => handleDelete(track.id)}
+                disabled={isDeleting === track.id}
+                className={`p-1.5 rounded-lg transition-colors flex-shrink-0 ${
+                  isDeleting === track.id 
+                    ? "text-rose-200 cursor-not-allowed" 
+                    : "text-rose-300 hover:text-red-500 hover:bg-red-50"
+                }`}
                 title="Remover música"
               >
-                <Trash2 className="w-3.5 h-3.5" />
+                <Trash2 className="w-4 h-4" />
               </button>
             )}
           </div>

@@ -1,37 +1,54 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { drawPhrase } from "@/lib/love-jar-actions";
-import { Heart } from "lucide-react";
+import { drawPhrase, deletePhrase } from "@/lib/love-jar-actions";
+import { Heart, Sparkles, Trash2 } from "lucide-react";
+
+interface Phrase {
+  id: string;
+  phrase: string;
+  category: string;
+}
 
 interface LoveJarProps {
   phraseCount: number;
+  isAdmin?: boolean;
 }
 
-export function LoveJar({ phraseCount }: LoveJarProps) {
-  const [currentPhrase, setCurrentPhrase] = useState<{
-    phrase: string;
-    category: string;
-  } | null>(null);
+export function LoveJar({ phraseCount, isAdmin }: LoveJarProps) {
+  const [drawnPhrase, setDrawnPhrase] = useState<Phrase | null>(null);
   const [isRevealing, setIsRevealing] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDraw = () => {
     if (isPending || isRevealing) return;
 
     setIsRevealing(true);
-    setCurrentPhrase(null);
+    setDrawnPhrase(null);
 
     startTransition(async () => {
       const phrase = await drawPhrase();
       // Delay reveal for animation
       setTimeout(() => {
-        setCurrentPhrase(
-          phrase ? { phrase: phrase.phrase, category: phrase.category } : null
-        );
+        setDrawnPhrase(phrase);
         setIsRevealing(false);
       }, 600);
     });
+  };
+
+  const handleDeletePhrase = async () => {
+    if (!drawnPhrase) return;
+    if (window.confirm("Certeza que quer apagar essa frase/lembrança do potinho?")) {
+      setIsDeleting(true);
+      const success = await deletePhrase(drawnPhrase.id);
+      setIsDeleting(false);
+      
+      if (success) {
+        setDrawnPhrase(null);
+        // Optionally, you might want to trigger a re-fetch of phraseCount or decrement it locally
+      }
+    }
   };
 
   const categoryLabels: Record<string, string> = {
@@ -156,25 +173,38 @@ export function LoveJar({ phraseCount }: LoveJarProps) {
       </button>
 
       {/* Revealed phrase */}
-      {currentPhrase && (
+      {drawnPhrase && (
         <div className="mt-6 w-full max-w-sm jar-unfold">
-          <div className="bg-white rounded-2xl border border-rose-100 p-6 text-center shadow-sm">
+          <div className="bg-white rounded-2xl border border-rose-100 p-6 text-center shadow-sm relative">
             <span className="inline-block text-[10px] uppercase tracking-wider text-rose-300 font-medium bg-rose-50 px-2.5 py-0.5 rounded-full mb-3">
-              {categoryLabels[currentPhrase.category] || "Dengo"}
+              {categoryLabels[drawnPhrase.category] || "Dengo"}
             </span>
             <p className="text-lg font-handwriting text-rose-900 leading-relaxed">
-              &ldquo;{currentPhrase.phrase}&rdquo;
+              &ldquo;{drawnPhrase.phrase}&rdquo;
             </p>
             <p className="mt-3 text-xs text-rose-300 flex items-center justify-center gap-1">
               — Bryan{" "}
               <Heart className="w-3 h-3 fill-rose-400 text-rose-400" />
             </p>
+            
+            {isAdmin && (
+              <div className="mt-4 pt-4 border-t border-rose-50 flex justify-center">
+                <button
+                  onClick={handleDeletePhrase}
+                  disabled={isDeleting}
+                  className="px-4 py-2 text-rose-300 hover:text-red-500 hover:bg-red-50 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 active:scale-95 disabled:opacity-50"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  {isDeleting ? "Apagando..." : "Apagar essa frase"}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
 
       {/* No phrase found (all drawn recently) */}
-      {!currentPhrase && !isRevealing && !isPending && currentPhrase === null && (
+      {!drawnPhrase && !isRevealing && !isPending && (
         <div className="mt-4 text-center">
           <p className="text-xs text-rose-200">
             Clique no botão para sortear 💕

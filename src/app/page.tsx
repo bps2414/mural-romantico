@@ -53,7 +53,7 @@ export default async function FeedPage() {
   );
 
   const jarContent = (
-    <LoveJar phraseCount={phraseCount} />
+    <LoveJar phraseCount={phraseCount} isAdmin={isAdmin} />
   );
 
   const musicContent = (
