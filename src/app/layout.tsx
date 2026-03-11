@@ -51,6 +51,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+      </head>
       <body className={`${outfit.variable} ${quicksand.variable} ${caveat.variable} antialiased font-sans bg-rose-50 text-slate-800 overscroll-none scroll-smooth min-h-screen`}>
         <ServiceWorkerRegister />
         {children}
