@@ -68,16 +68,26 @@ self.addEventListener('fetch', (event) => {
 
 // Push Notification — show notification when push received
 self.addEventListener('push', (event) => {
-  const data = event.data?.json() ?? {};
-  event.waitUntil(
-    self.registration.showNotification(data.title ?? 'Nosso Mural 💕', {
-      body: data.body ?? 'Algo novo te espera!',
-      icon: '/icons/icon-192.png',
-      badge: '/icons/icon-192.png',
-      vibrate: [200, 100, 200],
-      data: { url: data.url ?? '/' },
-    })
-  );
+  let data = {};
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (e) {
+      data = { body: event.data.text() };
+    }
+  }
+
+  // Define fallback notification object
+  const notificationPromise = self.registration.showNotification(data.title ?? 'Nosso Mural 💕', {
+    body: data.body ?? 'Algo novo te espera!',
+    icon: '/icons/icon-192.png',
+    vibrate: [200, 100, 200, 100, 200],
+    data: { url: data.url ?? '/' },
+    // Remove "badge" because Android requires alpha-channel only masked icon here,
+    // which causes a white square issue with normal color icons.
+  });
+
+  event.waitUntil(notificationPromise);
 });
 
 // Notification Click — open app on the correct page

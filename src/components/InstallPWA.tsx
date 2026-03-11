@@ -41,23 +41,26 @@ export function InstallPWA() {
       if (outcome === "accepted") {
         setDeferredPrompt(null);
       }
+    } else {
+      // Se clicou e não tem prompt (Pode já estar instalado ou Chrome não liberou)
+      alert("Para instalar neste celular, acesse o menu do Chrome e toque em 'Adicionar à tela inicial' ou 'Instalar aplicativo'.");
     }
   };
 
   if (isStandalone) return null; // Already installed!
 
   return (
-    <div className="mx-4 mt-6">
+    <div className="mx-4 mt-6 mb-4">
       <button
         onClick={handleInstallClick}
-        className="w-full bg-rose-50 border-2 border-rose-200 border-dashed hover:bg-rose-100/50 text-rose-700 py-4 px-4 rounded-2xl flex items-center justify-center gap-3 transition-colors active:scale-95 duration-200"
+        className="w-full bg-white border-2 border-rose-200 border-dashed hover:border-rose-400 text-rose-700 p-4 rounded-2xl flex items-center gap-4 transition-colors active:scale-95 duration-200 shadow-sm"
       >
-        <div className="bg-white p-2 rounded-xl shadow-sm text-rose-500">
-          <Download className="w-5 h-5" />
+        <div className="bg-rose-100 p-3 rounded-full text-rose-600 flex-shrink-0">
+          <Download className="w-6 h-6" />
         </div>
-        <div className="text-left">
-          <p className="font-heading font-semibold text-sm">Instalar Aplicativo</p>
-          <p className="text-xs text-rose-500 font-medium">Baixe o mural para a tela de início</p>
+        <div className="flex-1 text-left">
+          <p className="font-heading font-bold text-base text-rose-800">Instalar Aplicativo</p>
+          <p className="text-sm text-rose-500 font-medium">Baixe para a tela de início</p>
         </div>
       </button>
 
