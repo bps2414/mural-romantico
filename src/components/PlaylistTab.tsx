@@ -85,8 +85,8 @@ export function PlaylistTab({ tracks, isAdmin }: PlaylistTabProps) {
             height="80"
             frameBorder="0"
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            loading="lazy"
-            className="border-0"
+            loading="eager"
+            className="border-0 bg-rose-50 rounded-b-2xl"
             title={`${track.title} - ${track.artist}`}
           />
         </div>

@@ -113,37 +113,37 @@ export function LoveJar({ phraseCount, isAdmin }: LoveJarProps) {
             stroke="rgba(244, 63, 94, 0.3)"
             strokeWidth="1"
           />
+        </svg>
 
-          {/* Dynamic Hearts inside container */}
-          {/* We use a max of 40 visual hearts to keep performance, but the text counter shows the real number */}
+        {/* Dynamic HTML Hearts inside container (overcoming SVG Emoji render bugs on iOS/Safari) */}
+        <div className="absolute inset-x-0 bottom-4 top-16 mx-6 overflow-hidden rounded-b-[2rem] rounded-t-lg pointer-events-none">
           {Array.from({ length: Math.min(phraseCount, 40) }).map((_, i) => {
-            // Psuedo-random deterministic positions based on index
-            const x = 30 + ((i * 13) % 60); 
-            const finalY = 145 - ((i * 3) % 40) - Math.floor(i / 10) * 8;
-            const size = 10 + (i % 6);
+            const leftPct = 10 + ((i * 17) % 80); 
+            // from bottom
+            const bottomPct = ((i * 3) % 40) + Math.floor(i / 10) * 8;
+            const size = 12 + (i % 8);
             const rot = -15 + ((i * 27) % 30);
             
-            // Generate some falling ones if recently mounted/added, else just rest at bottom
-            const delay = (i % 5) * 0.2; // in seconds
+            const delay = (i % 5) * 0.2; 
             
             return (
-              <text 
+              <div 
                 key={i}
-                x={x} 
-                y={finalY} 
-                fontSize={size} 
-                className="jar-paper-heart"
+                className="absolute text-center drop-shadow-sm"
                 style={{ 
-                  transformOrigin: `${x}px ${finalY}px`,
+                  left: `${leftPct}%`,
+                  bottom: `${bottomPct}%`,
+                  fontSize: `${size}px`,
                   "--rot": `${rot}deg`,
-                  animation: `paperDrop 1.2s cubic-bezier(0.25, 1, 0.5, 1) ${delay}s both`
+                  transformOrigin: "center center",
+                  animation: `paperDropHtml 1.2s cubic-bezier(0.25, 1, 0.5, 1) ${delay}s both`
                 } as React.CSSProperties}
               >
                 {i % 3 === 0 ? "💗" : i % 2 === 0 ? "❤️" : "💕"}
-              </text>
+              </div>
             );
           })}
-        </svg>
+        </div>
 
         {/* Glow effect */}
         <div className="absolute inset-0 rounded-full bg-rose-200/20 blur-2xl -z-10" />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Bell, X } from "lucide-react";
+import { Bell, X, Share, PlusSquare } from "lucide-react";
 import { saveSubscription } from "@/lib/push-actions";
 
 const DISMISS_KEY = "push-prompt-dismissed";
@@ -23,33 +23,43 @@ export function NotificationPrompt() {
   const [loading, setLoading] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
 
+  const [isIOS, setIsIOS] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
+
   useEffect(() => {
-    // Check if push is supported
-    if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
+    // Check platforms and PWA status
+    const isStandaloneMode = window.matchMedia("(display-mode: standalone)").matches || 
+                             ("standalone" in navigator && (navigator as any).standalone === true);
+    setIsStandalone(isStandaloneMode);
 
-    // Check if already subscribed
-    navigator.serviceWorker.ready.then((reg) => {
-      reg.pushManager.getSubscription().then((sub) => {
-        if (sub) {
-          setSubscribed(true);
-          return;
-        }
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                        (navigator.userAgent.includes("Mac") && "ontouchend" in document);
+    setIsIOS(isIOSDevice);
 
-        // Check if was dismissed recently
-        const dismissed = localStorage.getItem(DISMISS_KEY);
-        if (dismissed) {
-          const dismissedAt = new Date(dismissed);
-          const now = new Date();
-          const diffDays = (now.getTime() - dismissedAt.getTime()) / (1000 * 60 * 60 * 24);
-          if (diffDays < DISMISS_DAYS) return;
-        }
+    const dismissed = localStorage.getItem(DISMISS_KEY);
+    if (dismissed) {
+      const dismissedAt = new Date(dismissed);
+      const diffDays = (new Date().getTime() - dismissedAt.getTime()) / (1000 * 60 * 60 * 24);
+      if (diffDays < DISMISS_DAYS) return;
+    }
 
-        // Check if permission was already denied
-        if (Notification.permission === "denied") return;
+    if (Notification.permission === "denied") return;
 
-        setShow(true);
+    // Show prompt if Push is supported OR if it's iOS not in standalone (fallback to installation promo)
+    if ("serviceWorker" in navigator && "PushManager" in window) {
+      navigator.serviceWorker.ready.then((reg) => {
+        reg.pushManager.getSubscription().then((sub) => {
+          if (sub) {
+            setSubscribed(true);
+          } else {
+            setShow(true);
+          }
+        });
       });
-    });
+    } else if (isIOSDevice && !isStandaloneMode) {
+      // In iOS web (not PWA), Push is generally NOT supported until installed
+      setShow(true);
+    }
   }, []);
 
   const handleSubscribe = async () => {
@@ -107,27 +117,50 @@ export function NotificationPrompt() {
             <Bell className="w-5 h-5 text-rose-500" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-rose-900 mb-0.5">
-              Quer receber avisos? 💕
-            </p>
-            <p className="text-xs text-rose-500 mb-3 leading-relaxed">
-              Te aviso quando tiver algo novo pra você aqui no mural!
-            </p>
-            <div className="flex gap-2">
-              <button
-                onClick={handleSubscribe}
-                disabled={loading}
-                className="px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white text-xs font-medium rounded-xl transition-all active:scale-95 disabled:opacity-50 shadow-sm shadow-rose-500/20"
-              >
-                {loading ? "..." : "Sim, me avisa! 🔔"}
-              </button>
-              <button
-                onClick={handleDismiss}
-                className="px-3 py-2 text-xs text-rose-400 hover:text-rose-600 transition-colors"
-              >
-                Agora não
-              </button>
-            </div>
+            {(!("PushManager" in window) && isIOS && !isStandalone) ? (
+              // iOS non-PWA fallback message
+              <>
+                <p className="text-sm font-medium text-rose-900 mb-0.5">
+                  Instale nosso App! 📱
+                </p>
+                <p className="text-xs text-rose-600 mb-3 leading-relaxed">
+                  Para ativar as notificações e instalar o aplicativo no seu iPhone, toque em <Share className="inline w-3 h-3 text-blue-500 mx-0.5" /> e depois em <strong className="text-rose-800">"Adicionar à Tela de Início"</strong> <PlusSquare className="inline w-3 h-3 mx-0.5" />.
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleDismiss}
+                    className="px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white text-xs font-medium rounded-xl transition-all shadow-sm shadow-rose-500/20"
+                  >
+                    Entendi!
+                  </button>
+                </div>
+              </>
+            ) : (
+              // Normal Push subscription
+              <>
+                <p className="text-sm font-medium text-rose-900 mb-0.5">
+                  Quer receber avisos? 💕
+                </p>
+                <p className="text-xs text-rose-500 mb-3 leading-relaxed">
+                  Te aviso quando tiver algo novo pra você aqui no mural!
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleSubscribe}
+                    disabled={loading}
+                    className="px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white text-xs font-medium rounded-xl transition-all active:scale-95 disabled:opacity-50 shadow-sm shadow-rose-500/20"
+                  >
+                    {loading ? "..." : "Sim, me avisa! 🔔"}
+                  </button>
+                  <button
+                    onClick={handleDismiss}
+                    className="px-3 py-2 text-xs text-rose-400 hover:text-rose-600 transition-colors"
+                  >
+                    Agora não
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
