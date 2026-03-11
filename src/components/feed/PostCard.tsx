@@ -11,13 +11,16 @@ export interface PostProps {
   message: string;
   created_at: string;
   author: string;
-  likes: { count: number }[];
+  likes: { role: string }[];
   comments: { count: number }[];
 }
 
 export function PostCard({ post, currentUserRole }: { post: PostProps, currentUserRole: "tata" | "admin" }) {
-  const [likesCount, setLikesCount] = useState(post.likes?.[0]?.count || 0);
-  const [hasLiked, setHasLiked] = useState(false);
+  const initialLiked = post.likes ? post.likes.some(l => l.role === currentUserRole) : false;
+  const initialLikesCount = post.likes ? post.likes.length : 0;
+
+  const [likesCount, setLikesCount] = useState(initialLikesCount);
+  const [hasLiked, setHasLiked] = useState(initialLiked);
   const [commentsCount, setCommentsCount] = useState(post.comments?.[0]?.count || 0);
   
   const [showComments, setShowComments] = useState(false);
@@ -50,10 +53,17 @@ export function PostCard({ post, currentUserRole }: { post: PostProps, currentUs
   });
 
   const handleLike = async () => {
-    if (hasLiked) return; // Prevent spamming
-    setHasLiked(true);
-    setLikesCount((prev) => prev + 1);
-    await toggleLike(post.id);
+    // Optimistic toggle
+    const newHasLiked = !hasLiked;
+    setHasLiked(newHasLiked);
+    setLikesCount((prev) => newHasLiked ? prev + 1 : prev - 1);
+    
+    const ok = await toggleLike(post.id);
+    if (!ok) {
+      // Revert if failed
+      setHasLiked(!newHasLiked);
+      setLikesCount((prev) => !newHasLiked ? prev + 1 : prev - 1);
+    }
   };
 
   const handleToggleComments = async () => {

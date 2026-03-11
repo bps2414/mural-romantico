@@ -1,26 +1,40 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { getAuthCookie } from "@/app/actions";
 
 export async function toggleLike(postId: string) {
   const supabase = await createClient();
+  const role = await getAuthCookie();
+  
+  if (!role) return false;
 
-  // First check if already liked (in this simple version, anyone can add a row,
-  // to make it true "toggle" for the whole app we just add or remove a like row.
-  // For simplicity since there's no real User session, we just insert a like 
-  // and we'll rely on local state to prevent spam if we want.
+  // Check if this user already liked the post
+  const { data: existing } = await supabase
+    .from('likes')
+    .select('id')
+    .eq('post_id', postId)
+    .eq('role', role)
+    .maybeSingle();
   
-  const { error } = await supabase.from('likes').insert({ post_id: postId })
-  
-  if (error) {
-    console.error("Error toggling like:", error)
-    return false;
+  if (existing) {
+    // Remove the like
+    const { error } = await supabase.from('likes').delete().eq('id', existing.id);
+    if (error) {
+      console.error("Error removing like:", error);
+      return false;
+    }
+    return true;
+  } else {
+    // Add the like
+    const { error } = await supabase.from('likes').insert({ post_id: postId, role });
+    if (error) {
+      console.error("Error adding like:", error);
+      return false;
+    }
+    return true;
   }
-  
-  return true;
 }
-
-import { getAuthCookie } from "@/app/actions";
 
 export async function addComment(postId: string, text: string) {
   const supabase = await createClient();
@@ -52,7 +66,7 @@ export async function getPosts() {
     .from('posts')
     .select(`
       *,
-      likes:likes(count),
+      likes:likes(role),
       comments:comments(count)
     `)
     .order('created_at', { ascending: false });
