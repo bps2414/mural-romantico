@@ -1,15 +1,10 @@
-const CACHE_NAME = 'mural-romantico-v1';
-const OFFLINE_URL = '/offline.html';
-
-// Assets to pre-cache on install
-const PRECACHE_ASSETS = [
-  OFFLINE_URL,
-];
+const CACHE_NAME = 'mural-romantico-v2';
+const OFFLINE_URL = '/';
 
 // Install — pre-cache offline fallback
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_ASSETS))
+    caches.open(CACHE_NAME).then((cache) => cache.add(OFFLINE_URL))
   );
   self.skipWaiting();
 });
@@ -56,7 +51,7 @@ self.addEventListener('fetch', (event) => {
         const cached = await caches.match(event.request);
         if (cached) return cached;
 
-        // For navigation requests, show offline page
+        // For navigation requests, show offline base
         if (event.request.mode === 'navigate') {
           return caches.match(OFFLINE_URL);
         }
@@ -77,14 +72,13 @@ self.addEventListener('push', (event) => {
     }
   }
 
-  // Define fallback notification object
-  const notificationPromise = self.registration.showNotification(data.title ?? 'Nosso Mural 💕', {
-    body: data.body ?? 'Algo novo te espera!',
+  // The Android Chrome requires NOT specifying a `badge` if it's colorful, 
+  // otherwise it turns into a white square. We only keep icon and body.
+  const notificationPromise = self.registration.showNotification(data.title ?? 'Nosso Mural', {
+    body: data.body ?? 'Algo novo no mural!',
     icon: '/icons/icon-192.png',
     vibrate: [200, 100, 200, 100, 200],
     data: { url: data.url ?? '/' },
-    // Remove "badge" because Android requires alpha-channel only masked icon here,
-    // which causes a white square issue with normal color icons.
   });
 
   event.waitUntil(notificationPromise);
@@ -102,7 +96,9 @@ self.addEventListener('notificationclick', (event) => {
         }
       }
       // Otherwise open a new window
-      return self.clients.openWindow(event.notification.data.url);
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(event.notification.data.url);
+      }
     })
   );
 });
