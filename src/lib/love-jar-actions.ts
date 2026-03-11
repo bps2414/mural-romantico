@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getAuthCookie } from "@/app/actions";
 import { revalidatePath } from "next/cache";
+import { sendPushNotification } from "@/lib/push-actions";
 
 /**
  * Add multiple phrases to the love jar (admin only)
@@ -31,6 +32,7 @@ export async function addPhrases(text: string, category: string = "motivo") {
   }
 
   revalidatePath("/");
+  sendPushNotification("🫙 Potinho Recheado!", `Bryan adicionou ${lines.length} nova(s) frase(s) no potinho de amor!`, "/").catch(() => {});
   return { success: true, count: lines.length };
 }
 

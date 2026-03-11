@@ -51,7 +51,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${outfit.variable} ${quicksand.variable} ${caveat.variable} antialiased font-sans bg-rose-50 text-slate-800 fixed inset-0 overflow-y-auto overscroll-none scroll-smooth`}>
+      <body className={`${outfit.variable} ${quicksand.variable} ${caveat.variable} antialiased font-sans bg-rose-50 text-slate-800 overscroll-none scroll-smooth min-h-screen`}>
         <ServiceWorkerRegister />
         {children}
       </body>

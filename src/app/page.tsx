@@ -6,6 +6,7 @@ import { DailyMessage } from "@/components/DailyMessage";
 import { LoveJar } from "@/components/LoveJar";
 import { PlaylistTab } from "@/components/PlaylistTab";
 import { NotificationPrompt } from "@/components/NotificationPrompt";
+import { InstallPWA } from "@/components/InstallPWA";
 import { LogoutButton } from "@/components/LogoutButton";
 import { Heart, Plus } from "lucide-react";
 import { getPosts, getNotes } from "@/lib/actions";
@@ -29,6 +30,8 @@ export default async function FeedPage() {
 
   const feedContent = (
     <>
+      <InstallPWA />
+      
       {posts && posts.length > 0 ? (
         <div className="space-y-6">
           {posts.map((post) => (

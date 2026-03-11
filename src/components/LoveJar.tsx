@@ -205,12 +205,15 @@ export function LoveJar({ phraseCount, isAdmin }: LoveJarProps) {
 
       {/* No phrase found (all drawn recently) */}
       {!drawnPhrase && !isRevealing && !isPending && (
-        <div className="mt-4 text-center">
+        <div className="mt-4 text-center pb-8">
           <p className="text-xs text-rose-200">
             Clique no botão para sortear 💕
           </p>
         </div>
       )}
+      
+      {/* Spacer to avoid bottom tab occlusion */}
+      <div className="h-28" />
     </div>
   );
 }

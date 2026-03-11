@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
+import { sendPushNotification } from "@/lib/push-actions";
 
 export async function uploadImage(file: File) {
   const supabase = createClient();
@@ -35,6 +36,7 @@ export async function createPost(imageUrl: string, message: string) {
     return false;
   }
   
+  sendPushNotification("Novo Post no Mural! 📸", "Bryan adicionou uma nova foto.", "/").catch(() => {});
   return true;
 }
 
@@ -54,5 +56,6 @@ export async function createNote(text: string) {
     return false;
   }
 
+  sendPushNotification("💌 Nova Cartinha!", "Você recebeu uma cartinha nova.", "/").catch(() => {});
   return true;
 }
